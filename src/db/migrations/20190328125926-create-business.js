@@ -1,26 +1,24 @@
-"use strict";
+'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable("users", {
+    return queryInterface.createTable('Businesses', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      email: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true
-      },
       shop_name: {
         type: Sequelize.STRING
       },
-      Car_pic: {
+      location: {
         type: Sequelize.STRING
       },
-      additional_info: {
-        type: Sequelize.STRING
+      opining_Time: {
+        type: Sequelize.TIME
+      },
+      closing_Time: {
+        type: Sequelize.TIME
       },
       phone_number: {
         type: Sequelize.STRING
@@ -28,24 +26,17 @@ module.exports = {
       menu: {
         type: Sequelize.STRING
       },
-      hashedPassword: {
-        type: Sequelize.STRING,
-        field: "hashed_password",
-        allowNull: false
-      },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
-        field: "created_at"
+        type: Sequelize.DATE
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
-        field: "updated_at"
+        type: Sequelize.DATE
       }
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable("users");
+    return queryInterface.dropTable('Businesses');
   }
 };

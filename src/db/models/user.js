@@ -1,20 +1,14 @@
 "use strict";
-const bcrypt = require("bcrypt");
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
-    "User",
-    {
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
-      },
-      hashedPassword: {
-        type: DataTypes.STRING,
-        field: "hashed_password",
-        allowNull: false
-      }
-    },
+    "User",{
+    name: DataTypes.STRING,
+    email: DataTypes.STRING,
+    Car_pic: DataTypes.STRING,
+    additional_info: DataTypes.STRING,
+    phone_number: DataTypes.STRING,
+    menu: DataTypes.STRING
+  }, 
     {
       tableName: "users",
       hooks: {
@@ -23,8 +17,8 @@ module.exports = (sequelize, DataTypes) => {
           user.hashedPassword = bcrypt.hashSync(user.hashedPassword, hashCost);
         }
       }
-    }
-  );
+    })
+  ;
 
   User.prototype.validPassword = function(password) {
     return bcrypt.compareSync(password, this.hashedPassword);
@@ -37,9 +31,11 @@ module.exports = (sequelize, DataTypes) => {
     this.hashedPassword = bcrypt.hashSync(password, hashCost);
     this.save();
   };
-
-  User.associate = models => {
-    // associations can be defined here
-  };
-  return User;
+  
+User.associate = function(models) {
+User.hasMany(models.Business,{
+foreignKey: "Business",
+as:"shop_id"});
 };
+  return User;
+}
