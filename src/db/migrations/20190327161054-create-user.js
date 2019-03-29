@@ -13,10 +13,10 @@ module.exports = {
         allowNull: false,
         unique: true
       },
-      shop_name: {
+      name: {
         type: Sequelize.STRING
       },
-      Car_pic: {
+      car_pic: {
         type: Sequelize.STRING
       },
       additional_info: {
@@ -25,12 +25,9 @@ module.exports = {
       phone_number: {
         type: Sequelize.STRING
       },
-      menu: {
-        type: Sequelize.STRING
-      },
-      hashedPassword: {
+      password: {
         type: Sequelize.STRING,
-        field: "hashed_password",
+        field: "password",
         allowNull: false
       },
       createdAt: {

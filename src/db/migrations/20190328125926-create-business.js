@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Businesses', {
+    return queryInterface.createTable('businesses', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -14,11 +14,11 @@ module.exports = {
       location: {
         type: Sequelize.STRING
       },
-      opining_Time: {
-        type: Sequelize.TIME
+      opining_time: {
+        type: Sequelize.STRING
       },
-      closing_Time: {
-        type: Sequelize.TIME
+      closing_time: {
+        type: Sequelize.STRING
       },
       phone_number: {
         type: Sequelize.STRING
@@ -26,17 +26,27 @@ module.exports = {
       menu: {
         type: Sequelize.STRING
       },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        onDelete: "CASCADE",
+        references: {
+          model: "users",
+        }
+      }, 
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        field: "created_at"
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        field: "updated_at"
       }
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Businesses');
+    return queryInterface.dropTable('businesses');
   }
 };

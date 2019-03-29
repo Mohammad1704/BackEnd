@@ -14,6 +14,9 @@ const User = models.User;
 // instantiate a router (mini app that only handles routes)
 const router = express.Router();
 
+
+
+
 router.post("/sign-up", (req, res, next) => {
   // start a promise chain, so that any errors will pass to `handle`
   Promise.resolve(req.body.credentials)

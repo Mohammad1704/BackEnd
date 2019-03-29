@@ -1,6 +1,6 @@
 // loads environment variables from a .env file into process.env
-import dotenv from "dotenv";
-dotenv.config();
+// import dotenv from "dotenv";
+// dotenv.config();
 
 // Import necessary NPM packages
 import express from "express";
@@ -13,6 +13,8 @@ import auth from "./lib/passport_startegy"; // passport authentication middlewar
 
 // Import routes files
 import exampleRoutes from "./routes/example_routes";
+import businessesRoutes from "./routes/business_routes";
+
 import userRoutes from "./routes/user_routes";
 
 // instantiate express application object
@@ -41,6 +43,7 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // register route files
+app.use(businessesRoutes);
 app.use(exampleRoutes);
 app.use(userRoutes);
 
