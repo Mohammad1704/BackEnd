@@ -9,9 +9,28 @@ import models from "../db/models";
 // const tokenAuth = passport.authenticate("jwt", { session: false });
 // const localAuth = passport.authenticate("local", { session: false });
 const User = models.User;
-
 // instantiate a router (mini app that only handles routes)
 const router = express.Router();
+
+
+router.get('/business/:id', (req, res) => {
+    console.log("=========== get business/:id ======");
+    
+    if (!isNaN(req.params.id)){
+      models.Business.findByPk(req.params.id)
+      .then((business) => {
+        if (business !== null){
+          res.status(200).json({ business });
+        } else {
+          res.status(401).json({message: 'business not found'});
+        }
+      })
+      .catch(e => console.log(e));
+    }else{
+      res.status(406).json({ error: 'unvilde ID'});
+    }
+    });
+
 
 router.get('/businesses',(req,res) => {
     models.Business.findAll()
@@ -22,6 +41,8 @@ router.get('/businesses',(req,res) => {
     })
     .catch(e => console.log(e));
 });
+
+
 
 export default router;
 

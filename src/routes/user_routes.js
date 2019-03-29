@@ -14,9 +14,24 @@ const User = models.User;
 // instantiate a router (mini app that only handles routes)
 const router = express.Router();
 
+router.get('/user/:id', (req, res) => {
+console.log("===========tes get user/:id======");
 
-
-
+if (!isNaN(req.params.id)){
+  models.User.findByPk(req.params.id)
+  .then((user) => {
+    if (user !== null){
+      res.status(200).json({ user });
+    } else {
+      res.status(401).json({message: 'user not found'});
+    }
+  })
+  .catch(e => console.log(e));
+}else{
+  res.status(406).json({ error: 'unvilde ID'});
+}
+});
+ 
 router.post("/sign-up", (req, res, next) => {
   // start a promise chain, so that any errors will pass to `handle`
   Promise.resolve(req.body.credentials)
