@@ -2,6 +2,8 @@ import express from "express";
 import passport from "passport";
 import jwt from "jsonwebtoken";
 
+// import businessRoutes from './routes/business_router.js';
+
 // pull in error types and the logic to handle them and set status codes
 import { BadParamsError } from "../lib/custom_errors";
 
@@ -43,10 +45,16 @@ router.post("/sign-up", (req, res, next) => {
       ) {
         throw new BadParamsError();
       } else {
-        return User.create({
+        return models.User.create( {
           email: credentials.email,
-          hashedPassword: credentials.password
-        });
+          hashedPassword: credentials.password,
+          password_confirmation:credentials.password_confirmation
+          // name: credentials.name,
+          // car_pic: credentials.car_pic ,
+          // additional_info: credentials.additional_info ,
+          // phone_number: credentials.phone_number
+         }
+        );
       }
     })
     .then(user => {
@@ -112,6 +120,8 @@ router.patch("/change-password", tokenAuth, (req, res, next) => {
     }
   })
     .then(user => {
+      console.log("then happninng  in /api/user/:id/businesse");
+
       if (user != null) {
         if (user.validPassword(req.body.passwords.old)) {
           user.bcrypt(req.body.passwords.new);
@@ -126,5 +136,17 @@ router.patch("/change-password", tokenAuth, (req, res, next) => {
     })
     .catch(next);
 });
+
+router.get('/api/user/:id/businesses', (req, res) => {
+  models.User.findByPk(req.params.id, { include: [{model: models.Business}] }).then(user => {
+    res.status(200).json({ business: user });
+  })
+  .catch(e => {console.log(e);
+    console.log("catch happned in /api/user/:id/businesse");
+  });
+});
+
+// ; 
+
 
 export default router;

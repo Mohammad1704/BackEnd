@@ -42,6 +42,40 @@ router.get('/businesses',(req,res) => {
     .catch(e => console.log(e));
 });
 
+router.delete('/business/:id', (req, res) => {
+    models.Business.findByPk(req.params.id) // findByPk is find by praymary key 
+    .then(business => {
+        business.destroy().then(() => {
+        res.status(200).json({
+          result:`business with ID ${req.params.id} Deleted`, success: true
+        });
+      })
+    })
+  })
+  router.put('/business/:id', (req, res) => {
+    models.Business.findByPk(req.params.id).then(business => {        
+       business.update({
+        shop_name: req.body.test,
+        location: req.body.location,
+        opining_time: req.body.opining_time    ,
+        closing_time: req.body.closing_time ,
+        phone_number: req.body.phone_number ,
+        menu: req.body.menu
+      })
+      res.status(200).json({ business: business });
+    }).catch(e => console.log(e));
+  });
+  
+  router.post('/businesses', (req, res) => {
+    models.Business.create(req.body)
+      .then((business) => {
+        res.status(201).json({
+            business: business,
+        });
+      })
+      .catch(e => console.log(e));
+  });
+
 
 
 export default router;
