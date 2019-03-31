@@ -25,9 +25,9 @@ module.exports = {
       phone_number: {
         type: Sequelize.STRING
       },
-      password: {
+      hashedPassword: {
         type: Sequelize.STRING,
-        field: "password",
+        field: "hashed_password",
         allowNull: false
       },
       createdAt: {

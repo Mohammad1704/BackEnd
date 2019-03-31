@@ -45,6 +45,7 @@ router.post("/sign-up", (req, res, next) => {
       ) {
         throw new BadParamsError();
       } else {
+        console.log(credentials)
         return models.User.create( {
           email: credentials.email,
           hashedPassword: credentials.password,
