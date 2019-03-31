@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
   business.associate = function(models) {
     business.belongsTo(models.User ,{
       foreignKey: "user_id",
+      as: "business"
     });
   };
   return business;

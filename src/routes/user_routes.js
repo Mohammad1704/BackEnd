@@ -17,21 +17,21 @@ const User = models.User;
 const router = express.Router();
 
 router.get('/user/:id', (req, res) => {
-console.log("===========tes get user/:id======");
+  console.log("===========tes get user/:id======");
 
-if (!isNaN(req.params.id)){
-  models.User.findByPk(req.params.id)
-  .then((user) => {
-    if (user !== null){
-      res.status(200).json({ user });
-    } else {
-      res.status(401).json({message: 'user not found'});
-    }
-  })
-  .catch(e => console.log(e));
-}else{
-  res.status(406).json({ error: 'unvilde ID'});
-}
+  if (!isNaN(req.params.id)){
+    models.User.findByPk(req.params.id)
+    .then((user) => {
+      if (user !== null){
+        res.status(200).json({ user });
+      } else {
+        res.status(401).json({message: 'user not found'});
+      }
+    })
+    .catch(e => console.log(e));
+  }else{
+    res.status(406).json({ error: 'unvilde ID'});
+  }
 });
  
 router.post("/sign-up", (req, res, next) => {
@@ -82,7 +82,7 @@ router.post("/sign-up", (req, res, next) => {
       });
     })
     // pass any errors along to the error handler
-    .catch(next);
+    .catch(e => next());
 });
 
 router.post("/sign-in", localAuth, (req, res, next) => {
@@ -121,7 +121,7 @@ router.patch("/change-password", tokenAuth, (req, res, next) => {
     }
   })
     .then(user => {
-      console.log("then happninng  in /api/user/:id/businesse");
+      console.log("then happninng  in user/:id/businesse");
 
       if (user != null) {
         if (user.validPassword(req.body.passwords.old)) {
@@ -135,12 +135,12 @@ router.patch("/change-password", tokenAuth, (req, res, next) => {
         throw new BadParamsError();
       }
     })
-    .catch(next);
+    .catch(e => next());
 });
 
-router.get('/api/user/:id/businesses', (req, res) => {
+router.get('/user/:id/businesses', (req, res) => {
   models.User.findByPk(req.params.id, { include: [{model: models.Business}] }).then(user => {
-    res.status(200).json({ business: user });
+    res.status(200).json({ Business: user });
   })
   .catch(e => {console.log(e);
     console.log("catch happned in /api/user/:id/businesse");
