@@ -5,9 +5,10 @@ import jwt from "jsonwebtoken";
 // import businessRoutes from './routes/business_router.js';
 
 // pull in error types and the logic to handle them and set status codes
-import { BadParamsError } from "../lib/custom_errors";
+import { BadParamsError , OwnershipError } from "../lib/custom_errors";
 
 import models from "./../db/models";
+import { request } from "http";
 
 const tokenAuth = passport.authenticate("jwt", { session: false });
 const localAuth = passport.authenticate("local", { session: false });
@@ -16,23 +17,23 @@ const User = models.User;
 // instantiate a router (mini app that only handles routes)
 const router = express.Router();
 
-router.get('/user/:id', (req, res) => {
-  console.log("===========tes get user/:id======");
+// router.get('/user/:id', (req, res) => {
+//   console.log("===========tes get user/:id======");
 
-  if (!isNaN(req.params.id)){
-    models.User.findByPk(req.params.id)
-    .then((user) => {
-      if (user !== null){
-        res.status(200).json({ user });
-      } else {
-        res.status(401).json({message: 'user not found'});
-      }
-    })
-    .catch(e => console.log(e));
-  }else{
-    res.status(406).json({ error: 'unvilde ID'});
-  }
-});
+//   if (!isNaN(req.params.id)){
+//     models.User.findByPk(req.params.id)
+//     .then((user) => {
+//       if (user !== null){
+//         res.status(200).json({ user });
+//       } else {
+//         res.status(401).json({message: 'user not found'});
+//       }
+//     })
+//     .catch(e => console.log(e));
+//   }else{
+//     res.status(406).json({ error: 'unvilde ID'});
+//   }
+// });
  
 router.post("/sign-up", (req, res, next) => {
   // start a promise chain, so that any errors will pass to `handle`
@@ -49,7 +50,10 @@ router.post("/sign-up", (req, res, next) => {
         return models.User.create( {
           email: credentials.email,
           hashedPassword: credentials.password,
-          password_confirmation:credentials.password_confirmation
+          password_confirmation:credentials.password_confirmation,
+          car_pic:credentials.car_pic,
+          additional_info:credentials.additional_info,
+          phone_number:credentials.phone_number
           // name: credentials.name,
           // car_pic: credentials.car_pic ,
           // additional_info: credentials.additional_info ,
@@ -112,6 +116,22 @@ router.post("/sign-in", localAuth, (req, res, next) => {
   }
 });
 
+router.put('/EditProfile/:id', (req, res) => {
+  console.log('hi');
+  models.User.findByPk(req.params.id).then(user => {   
+    console.log("then run /EditProfile/:id");
+         
+     user.update({
+      name:req.body.user.name,
+      email:req.body.user.email,
+      car_pic:req.body.user.car_pic,
+      additional_info : req.body.user.additional_info,
+      phone_number: req.body.user.phone_number
+    })
+    res.status(200).json({ user: user });
+  }).catch(e => console.log(e));
+});
+
 router.patch("/change-password", tokenAuth, (req, res, next) => {
   if (!req.body.passwords.new) throw new BadParamsError();
 
@@ -138,16 +158,54 @@ router.patch("/change-password", tokenAuth, (req, res, next) => {
     .catch(e => next());
 });
 
-router.get('/user/:id/businesses', (req, res) => {
-  models.User.findByPk(req.params.id, { include: [{model: models.Business}] }).then(user => {
-    res.status(200).json({ Business: user });
+router.get('/user/:userID/businesses', (req, res) => {
+  models.User.findByPk(req.params.userID,
+    { include: [{model: models.Business , as: "business"}] }
+    ).then(user => {
+    res.status(200).json({ user: user }); // or use user.business to show only user businesses
   })
   .catch(e => {console.log(e);
-    console.log("catch happned in /api/user/:id/businesse");
+    console.log("catch happens in /api/user/:id/business");
   });
 });
 
-// ; 
+router.put('/user/:userID/businesses/:id', tokenAuth , (req, res , next) => {  // <=== not work 
 
+ 
+  models.Business.findByPk(req.params.id).then(business => {  
+    if(req.user.id === business.user_id )  {    
+     business.update({
+      shop_name: req.body.test,
+      location: req.body.location,
+      opining_time: req.body.opining_time ,
+      closing_time: req.body.closing_time ,
+      phone_number: req.body.phone_number ,
+      menu: req.body.menu
+    })
+    res.status(200).json({ business: business });
+  } else {
+    throw new OwnershipError()
+  }
+  }).catch(e => next());
+});
+
+// ; 
+router.post('user/:id/businesses', (req, res) => { // <=== not work
+  models.Business.create({
+    shop_name: req.body.shop_name,                                               
+    location: req.body.location,                                   
+    opining_time: req.body.opining_time,                                     
+    closing_time: req.body.closing_time,                                     
+    phone_number: req.body.phone_number,                                     
+    menu: req.body.menu,                                   
+    user_id: req.body.user_id                           
+  })
+    .then((business) => {
+      res.status(201).json({
+          business: business,
+      });
+    })
+    .catch(e => console.log(e));
+});
 
 export default router;
