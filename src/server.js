@@ -7,7 +7,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
+import logger from "morgan"
 import errorHandler from "./lib/error_handler"; //  error handling middleware
 import auth from "./lib/passport_startegy"; // passport authentication middleware
 
@@ -32,6 +32,7 @@ const port = process.env.PORT;
 // register passport authentication middleware
 app.use(auth);
 
+app.use(logger("dev"))
 // add `bodyParser` middleware which will parse JSON requests into
 // JS objects before they reach the route files.
 app.use(bodyParser.json());

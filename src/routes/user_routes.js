@@ -190,7 +190,7 @@ router.put('/user/:userID/businesses/:id', tokenAuth , (req, res , next) => {  /
 });
 
 // ; 
-router.post('user/:id/businesses', (req, res) => { // <=== not work
+router.post('/user/:userID/businesses', tokenAuth, (req, res) => { // <=== not work
   models.Business.create({
     shop_name: req.body.shop_name,                                               
     location: req.body.location,                                   
@@ -198,7 +198,7 @@ router.post('user/:id/businesses', (req, res) => { // <=== not work
     closing_time: req.body.closing_time,                                     
     phone_number: req.body.phone_number,                                     
     menu: req.body.menu,                                   
-    user_id: req.body.user_id                           
+    user_id: req.params.userID                         
   })
     .then((business) => {
       res.status(201).json({
