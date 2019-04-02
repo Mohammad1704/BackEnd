@@ -17,23 +17,25 @@ const User = models.User;
 // instantiate a router (mini app that only handles routes)
 const router = express.Router();
 
-// router.get('/user/:id', (req, res) => {
-//   console.log("===========tes get user/:id======");
+router.get('/user/:id', (req, res) => {
+  console.log("===========tes get user/:id======");
 
-//   if (!isNaN(req.params.id)){
-//     models.User.findByPk(req.params.id)
-//     .then((user) => {
-//       if (user !== null){
-//         res.status(200).json({ user });
-//       } else {
-//         res.status(401).json({message: 'user not found'});
-//       }
-//     })
-//     .catch(e => console.log(e));
-//   }else{
-//     res.status(406).json({ error: 'unvilde ID'});
-//   }
-// });
+  if (!isNaN(req.params.id)){
+    models.User.findByPk(req.params.id, {
+      include: [{ model: models.Business, as: "business"}]
+    })
+    .then((user) => {
+      if (user !== null){
+        res.status(200).json({ user });
+      } else {
+        res.status(401).json({message: 'user not found'});
+      }
+    })
+    .catch(e => console.log(e));
+  }else{
+    res.status(406).json({ error: 'unvilde ID'});
+  }
+});
  
 router.post("/sign-up", (req, res, next) => {
   // start a promise chain, so that any errors will pass to `handle`
@@ -173,31 +175,31 @@ router.put('/user/:userID/businesses/:id', tokenAuth , (req, res , next) => {  /
 
  
   models.Business.findByPk(req.params.id).then(business => {  
-    if(req.user.id === business.user_id )  {    
+    // if(req.user.id === business.user_id )  {    
      business.update({
-      shop_name: req.body.test,
-      location: req.body.location,
-      opining_time: req.body.opining_time ,
-      closing_time: req.body.closing_time ,
-      phone_number: req.body.phone_number ,
-      menu: req.body.menu
+      shop_name: req.body.business.shop_name,
+      location: req.body.business.location,
+      opining_time: req.body.business.opining_time ,
+      closing_time: req.body.business.closing_time ,
+      phone_number: req.body.business.phone_number ,
+      menu: req.body.business.menu
     })
     res.status(200).json({ business: business });
-  } else {
-    throw new OwnershipError()
-  }
+  // } else {
+  //   throw new OwnershipError()
+  // }
   }).catch(e => next());
 });
 
 // ; 
 router.post('/user/:userID/businesses', tokenAuth, (req, res) => { // <=== not work
   models.Business.create({
-    shop_name: req.body.shop_name,                                               
-    location: req.body.location,                                   
-    opining_time: req.body.opining_time,                                     
-    closing_time: req.body.closing_time,                                     
-    phone_number: req.body.phone_number,                                     
-    menu: req.body.menu,                                   
+    shop_name: req.body.business.shop_name,                                               
+    location: req.body.business.location,                                   
+    opining_time: req.body.business.opining_time,                                     
+    closing_time: req.body.business.closing_time,                                     
+    phone_number: req.body.business.phone_number,                                     
+    menu: req.body.business.menu,                                   
     user_id: req.params.userID                         
   })
     .then((business) => {

@@ -53,19 +53,7 @@ router.delete('/business/:id', (req, res) => {
     })
   })
 
-  // router.put('user/:user_id/business/:id', (req, res) => {
-  //   models.Business.findByPk(req.params.id).then(business => {        
-  //      business.update({
-  //       shop_name: req.body.test,
-  //       location: req.body.location,
-  //       opining_time: req.body.opining_time    ,
-  //       closing_time: req.body.closing_time ,
-  //       phone_number: req.body.phone_number ,
-  //       menu: req.body.menu
-  //     })
-  //     res.status(200).json({ business: business });
-  //   }).catch(e => console.log(e));
-  // });
+
 
   
 
