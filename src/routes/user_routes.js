@@ -121,7 +121,7 @@ router.post("/sign-in", localAuth, (req, res, next) => {
 router.put('/EditProfile/:id', (req, res) => {
   console.log('hi');
   models.User.findByPk(req.params.id).then(user => {   
-    console.log("then run /EditProfile/:id");
+    console.log("then run /EditProfile/:id", req.body.user);
          
      user.update({
       name:req.body.user.name,
