@@ -17,6 +17,53 @@ const User = models.User;
 // instantiate a router (mini app that only handles routes)
 const router = express.Router();
 
+router.post("/sign-up", (req, res, next) => {
+  // start a promise chain, so that any errors will pass to `handle`
+  Promise.resolve(req.body.credentials)
+    .then(credentials => {
+      if (
+        !credentials ||
+        !credentials.password ||
+        credentials.password !== credentials.password_confirmation
+      ) {
+        throw new BadParamsError();
+      } else {
+        return User.create({
+          email: credentials.email,
+          hashedPassword: credentials.password,
+          car_pic:credentials.car_pic,
+          additional_info:credentials.additional_info,
+          phone_number:credentials.phone_number
+        });
+      }
+    })
+    .then(user => {
+      const payload = {
+        id: user.id,
+        email: user.email,
+        expires: process.env.JWT_EXPIRATION_D + "d"
+      };
+
+      // assigns payload to req.user
+      req.login(payload, { session: false }, error => {
+        if (error) {
+          next();
+        }
+
+        // generate a signed json web token and return it in the response
+        const token = jwt.sign(JSON.stringify(payload), process.env.PASS_KEY);
+
+        // assign our jwt to the cookie
+        res
+          .cookie("jwt", token, { httpOnly: true, secure: false })
+          .status(201)
+          .json({ id: req.user.id, email: req.user.email });
+      });
+    })
+    // pass any errors along to the error handler
+    .catch(next);
+});
+
 router.get('/user/:id', (req, res) => {
   console.log("===========tes get user/:id======");
 
@@ -37,64 +84,60 @@ router.get('/user/:id', (req, res) => {
   }
 });
  
-router.post("/sign-up", (req, res, next) => {
-  // start a promise chain, so that any errors will pass to `handle`
-  // Promise.resolve(req.body.credentials)
-  //   .then(credentials => {
-  //     if (
-  //       !credentials ||
-  //       !credentials.password ||
-  //       credentials.password !== credentials.password_confirmation
-  //     ) {
-  //       throw new BadParamsError();
-  //     } else {
-  //       console.log(credentials)
-        // return models.User.create( {
-        //   email: credentials.email,
-        //   hashedPassword: credentials.password,
-        //   // password_confirmation:credentials.password_confirmation,
-        //   // car_pic:credentials.car_pic,
-        //   // additional_info:credentials.additional_info,
-        //   // phone_number:credentials.phone_number
-        //   // name: credentials.name,
-        //   // car_pic: credentials.car_pic ,
-        //   // additional_info: credentials.additional_info ,
-        //   // phone_number: credentials.phone_number
-        //  }
-        // );
-  //     }
-  //   })
-    // .then(user => {
-    //   const payload = {
-    //     id: user.id,
-    //     email: user.email,
-    //     expires: process.env.JWT_EXPIRATION_D + "d"
-    //   };
+// router.post("/sign-up", (req, res, next) => {
+//   // start a promise chain, so that any errors will pass to `handle`
+//   Promise.resolve(req.body.credentials)
+//     .then(credentials => {
+//       if (
+//         !credentials ||
+//         !credentials.password ||
+//         credentials.password !== credentials.password_confirmation
+//       ) {
+//         throw new BadParamsError();
+//       } else {
+//         console.log(credentials)
+//         return models.User.create( {
+//           email: credentials.email,
+//           hashedPassword: credentials.password,
+//           password_confirmation:credentials.password_confirmation,
+//           car_pic:credentials.car_pic,
+//           additional_info:credentials.additional_info,
+//           phone_number:credentials.phone_number
+//           // name: credentials.name,
+//           // car_pic: credentials.car_pic ,
+//           // additional_info: credentials.additional_info ,
+//           // phone_number: credentials.phone_number
+//          }
+//         );
+//       }
+//     })
+//     .then(user => {
+//       const payload = {
+//         id: user.id,
+//         email: user.email,
+//         expires: process.env.JWT_EXPIRATION_D + "d"
+//       };
 
-  //     // assigns payload to req.user
-  //     req.login(payload, { session: false }, error => {
-  //       if (error) {
-  //         next();
-  //       }
+//       // assigns payload to req.user
+//       req.login(payload, { session: false }, error => {
+//         if (error) {
+//           next();
+//         }
 
-  //       // generate a signed json web token and return it in the response
-  //       const token = jwt.sign(JSON.stringify(payload), process.env.PASS_KEY);
+//         // generate a signed json web token and return it in the response
+//         const token = jwt.sign(JSON.stringify(payload), process.env.PASS_KEY);
 
-  //       // assign our jwt to the cookie
-        // res
-        //   .cookie("jwt", token, { httpOnly: true, secure: false })
-        //   .status(201)
-        //   .json({ id: req.user.id, email: req.user.email });
-  //     });
-  //   })
-  //   // pass any errors along to the error handler
-  //   .catch(e => next());
+//         // assign our jwt to the cookie
+//         res
+//           .cookie("jwt", token, { httpOnly: true, secure: false })
+//           .status(201)
+//           .json({ id: req.user.id, email: req.user.email });
+//       });
+//     })
+//     // pass any errors along to the error handler
+//     .catch(e => next());
+// });
 
-  models.User.create( {
-          email: credentials.email,
-          hashedPassword: credentials.password
-         }).then(user => { res.json({ user})}).catch(e => next());
-})
 router.post("/sign-in", localAuth, (req, res, next) => {
   if (req.user) {
     // This is what ends up in our JWT
@@ -215,5 +258,3 @@ router.post('/user/:userID/businesses', tokenAuth, (req, res) => { // <=== not w
 });
 
 export default router;
-
-
