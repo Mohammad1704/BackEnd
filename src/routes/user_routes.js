@@ -92,15 +92,7 @@ router.post("/sign-up", (req, res, next) => {
 
   models.User.create( {
           email: credentials.email,
-          hashedPassword: credentials.password,
-          // password_confirmation:credentials.password_confirmation,
-          // car_pic:credentials.car_pic,
-          // additional_info:credentials.additional_info,
-          // phone_number:credentials.phone_number
-          // name: credentials.name,
-          // car_pic: credentials.car_pic ,
-          // additional_info: credentials.additional_info ,
-          // phone_number: credentials.phone_number
+          hashedPassword: credentials.password
          }).then(user => { res.json({ user})}).catch(e => next());
 })
 router.post("/sign-in", localAuth, (req, res, next) => {
