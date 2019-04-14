@@ -5,7 +5,6 @@
 // Import necessary NPM packages
 import express from "express";
 import bodyParser from "body-parser";
-import cors from "cors";
 import cookieParser from "cookie-parser";
 import logger from "morgan"
 import errorHandler from "./lib/error_handler"; //  error handling middleware
@@ -16,19 +15,19 @@ import exampleRoutes from "./routes/example_routes";
 import businessesRoutes from "./routes/business_routes";
 
 import userRoutes from "./routes/user_routes";
+// Import the library:
+var cors = require('cors');
+
 
 // instantiate express application object
 const app = express();
 
 // set CORS headers on response from this API using the `cors` NPM package
 // `CLIENT_ORIGIN` is an environment variable that will be set on Heroku
-// app.use(cors({ origin: process.env.CLIENT_ORIGIN, credentials: true }));
+app.use(cors({ origin: process.env.CLIENT_ORIGIN, credentials: true }));
 
-const corsOptions = {
-  origin: '*',
-  credentials: true };
- 
- app.use(cors(corsOptions));
+
+
 
 // define port for API to run on
 const port = process.env.PORT;
